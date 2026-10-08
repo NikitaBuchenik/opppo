@@ -20,8 +20,6 @@ using namespace std;
 // REM TYPE <PENCIL|PEN|PAPER>
 // PRINT
 
-ofstream outFile;
-
 enum class Color {
     RED, ORANGE, YELLOW, GREEN, BLUE, VIOLET, UNKNOWN
 };
@@ -68,7 +66,7 @@ public:
     }
 
     virtual string getType() const = 0;
-    virtual void print() const = 0;
+    virtual void print(ostream& os) const = 0;
 };
 
 class Pencil : public Stationery {
@@ -86,12 +84,12 @@ public:
         return "PENCIL";
     }
 
-    void print() const override {
-        outFile << "PENCIL: "
-             << "leadDensity=" << leadDensity
-             << ", color=" << colorToString(color)
-             << ", price=" << fixed << setprecision(2) << price
-             << ", phone=" << phone << '\n';
+    void print(ostream& os) const override {
+        os << "PENCIL: "
+           << "leadDensity=" << leadDensity
+           << ", color=" << colorToString(color)
+           << ", price=" << fixed << setprecision(2) << price
+           << ", phone=" << phone << '\n';
     }
 };
 
@@ -110,12 +108,12 @@ public:
         return "PEN";
     }
 
-    void print() const override {
-        outFile << "PEN: "
-             << "type=" << penType
-             << ", diameter=" << fixed << setprecision(2) << diameter
-             << ", price=" << fixed << setprecision(2) << price
-             << ", phone=" << phone << '\n';
+    void print(ostream& os) const override {
+        os << "PEN: "
+           << "type=" << penType
+           << ", diameter=" << fixed << setprecision(2) << diameter
+           << ", price=" << fixed << setprecision(2) << price
+           << ", phone=" << phone << '\n';
     }
 };
 
@@ -137,13 +135,13 @@ public:
         return "PAPER";
     }
 
-    void print() const override {
-        outFile << "PAPER: "
-             << "density=" << density
-             << ", width=" << width
-             << ", height=" << height
-             << ", price=" << fixed << setprecision(2) << price
-             << ", phone=" << phone << '\n';
+    void print(ostream& os) const override {
+        os << "PAPER: "
+           << "density=" << density
+           << ", width=" << width
+           << ", height=" << height
+           << ", price=" << fixed << setprecision(2) << price
+           << ", phone=" << phone << '\n';
     }
 };
 
@@ -294,7 +292,7 @@ void processFile(const string& filename, Container& items) {
         return;
     }
 
-    outFile.open("output.txt");
+    ofstream outFile("output.txt");
     if (!outFile.is_open()) {
         cerr << "Не удалось открыть файл для записи: output.txt\n";
         return;
@@ -324,7 +322,7 @@ void processFile(const string& filename, Container& items) {
                 outFile << "Контейнер пуст.\n";
             } else {
                 for (const auto& item : items) {
-                    item->print();
+                    item->print(outFile);
                 }
             }
         }
@@ -332,14 +330,11 @@ void processFile(const string& filename, Container& items) {
             cerr << "Неизвестная команда: " << command << '\n';
         }
     }
-
-    outFile.close();
 }
 
 int main() {
     Container items;
-
-    // Имя файла с командами можно изменить при необходимости.
+    
     processFile("input.txt", items);
 
     return 0;
