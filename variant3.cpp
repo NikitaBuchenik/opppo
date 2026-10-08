@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <iomanip>
 #include <string>
+#include <unordered_map>
+#include <functional>
 
 using namespace std;
 
@@ -147,14 +149,21 @@ public:
 
 using Container = vector<unique_ptr<Stationery>>;
 
+const unordered_map<string, function<bool(double, double)>> OPERATORS = {
+    {">",  [](double a, double b) { return a > b;  }},
+    {"<",  [](double a, double b) { return a < b;  }},
+    {">=", [](double a, double b) { return a >= b; }},
+    {"<=", [](double a, double b) { return a <= b; }},
+    {"==", [](double a, double b) { return a == b; }},
+    {"!=", [](double a, double b) { return a != b; }},
+};
+
 bool compare(double left, const string& op, double right) {
-    if (op == ">")  return left > right;
-    if (op == "<")  return left < right;
-    if (op == ">=") return left >= right;
-    if (op == "<=") return left <= right;
-    if (op == "==") return left == right;
-    if (op == "!=") return left != right;
-    return false;
+    auto it = OPERATORS.find(op);
+    if (it == OPERATORS.end()) {
+        return false;
+    }
+    return it->second(left, right);
 }
 
 void processAdd(istringstream& iss, Container& items) {
@@ -334,7 +343,7 @@ void processFile(const string& filename, Container& items) {
 
 int main() {
     Container items;
-    
+
     processFile("input.txt", items);
 
     return 0;
