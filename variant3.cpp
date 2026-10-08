@@ -166,71 +166,82 @@ bool compare(double left, const string& op, double right) {
     return it->second(left, right);
 }
 
+unique_ptr<Stationery> parsePencil(istringstream& iss) {
+    int density;
+    string color;
+    double price;
+    string phone;
+
+    if (!(iss >> density >> color >> price >> phone)) {
+        cerr << "Ошибка ADD PENCIL\n";
+        return nullptr;
+    }
+
+    Color c = stringToColor(color);
+    if (c == Color::UNKNOWN) {
+        cerr << "Неизвестный цвет карандаша: " << color << '\n';
+        return nullptr;
+    }
+
+    return make_unique<Pencil>(density, c, price, phone);
+}
+
+unique_ptr<Stationery> parsePen(istringstream& iss) {
+    string penType;
+    double diameter;
+    double price;
+    string phone;
+
+    if (!(iss >> penType >> diameter >> price >> phone)) {
+        cerr << "Ошибка ADD PEN\n";
+        return nullptr;
+    }
+
+    if (penType != "BALL" && penType != "GEL") {
+        cerr << "Тип ручки должен быть BALL или GEL\n";
+        return nullptr;
+    }
+
+    return make_unique<Pen>(penType, diameter, price, phone);
+}
+
+unique_ptr<Stationery> parsePaper(istringstream& iss) {
+    int density;
+    int width;
+    int height;
+    double price;
+    string phone;
+
+    if (!(iss >> density >> width >> height >> price >> phone)) {
+        cerr << "Ошибка ADD PAPER\n";
+        return nullptr;
+    }
+
+    return make_unique<Paper>(density, width, height, price, phone);
+}
+
 void processAdd(istringstream& iss, Container& items) {
     string type;
     iss >> type;
 
+    unique_ptr<Stationery> item;
+
     if (type == "PENCIL") {
-        int density;
-        string color;
-        double price;
-        string phone;
-
-        if (!(iss >> density >> color >> price >> phone)) {
-            cerr << "Ошибка ADD PENCIL\n";
-            return;
-        }
-
-        Color c = stringToColor(color);
-        if (c == Color::UNKNOWN) {
-            cerr << "Неизвестный цвет карандаша: " << color << '\n';
-            return;
-        }
-
-        items.push_back(
-            make_unique<Pencil>(density, c, price, phone)
-        );
+        item = parsePencil(iss);
     }
     else if (type == "PEN") {
-        string penType;
-        double diameter;
-        double price;
-        string phone;
-
-        if (!(iss >> penType >> diameter >> price >> phone)) {
-            cerr << "Ошибка ADD PEN\n";
-            return;
-        }
-
-        if (penType != "BALL" && penType != "GEL") {
-            cerr << "Тип ручки должен быть BALL или GEL\n";
-            return;
-        }
-
-        items.push_back(
-            make_unique<Pen>(penType, diameter, price, phone)
-        );
+        item = parsePen(iss);
     }
     else if (type == "PAPER") {
-        int density;
-        int width;
-        int height;
-        double price;
-        string phone;
-
-        if (!(iss >> density >> width >> height >> price >> phone)) {
-            cerr << "Ошибка ADD PAPER\n";
-            return;
-        }
-
-        items.push_back(
-            make_unique<Paper>(
-                density, width, height, price, phone
-            )
-        );
+        item = parsePaper(iss);
     }
     else {
         cerr << "Неизвестный тип объекта: " << type << '\n';
+        return;
+    }
+
+    if (item) {
+        items.push_back(move(item));
     }
 }
 

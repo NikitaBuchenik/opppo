@@ -17,3 +17,57 @@ PEN: type=BALL, diameter=0.70, price=60.00, phone=+79991112233
 
 --- Содержимое контейнера ---
 PENCIL: leadDensity=2, color=BLUE, price=50.50, phone=+79991234567
+
+--- Содержимое контейнера ---
+PENCIL: leadDensity=2, color=BLUE, price=50.50, phone=+79991234567
+PENCIL: leadDensity=5, color=GREEN, price=25.90, phone=+79995554433
+PEN: type=GEL, diameter=0.50, price=150.00, phone=+79992223344
+PAPER: density=120, width=297, height=420, price=90.00, phone=+79996667788
+PENCIL: leadDensity=1, color=YELLOW, price=12.00, phone=+79993332211
+PEN: type=GEL, diameter=0.50, price=45.00, phone=+79993332211
+
+--- Содержимое контейнера ---
+PENCIL: leadDensity=2, color=BLUE, price=50.50, phone=+79991234567
+PEN: type=GEL, diameter=0.50, price=150.00, phone=+79992223344
+PAPER: density=120, width=297, height=420, price=90.00, phone=+79996667788
+
+--- Содержимое контейнера ---
+PEN: type=GEL, diameter=0.50, price=150.00, phone=+79992223344
+PAPER: density=120, width=297, height=420, price=90.00, phone=+79996667788
+
+--- Содержимое контейнера ---
+PEN: type=GEL, diameter=0.50, price=150.00, phone=+79992223344
+PAPER: density=120, width=297, height=420, price=90.00, phone=+79996667788
+PAPER: density=80, width=148, height=210, price=20.00, phone=+79994445566
+PEN: type=BALL, diameter=1.00, price=100.00, phone=+79997778899
+PENCIL: leadDensity=4, color=VIOLET, price=200.00, phone=+79991112233
+
+--- Содержимое контейнера ---
+PEN: type=GEL, diameter=0.50, price=150.00, phone=+79992223344
+PAPER: density=120, width=297, height=420, price=90.00, phone=+79996667788
+PAPER: density=80, width=148, height=210, price=20.00, phone=+79994445566
+PEN: type=BALL, diameter=1.00, price=100.00, phone=+79997778899
+PENCIL: leadDensity=4, color=VIOLET, price=200.00, phone=+79991112233
+
+--- Содержимое контейнера ---
+PAPER: density=120, width=297, height=420, price=90.00, phone=+79996667788
+PAPER: density=80, width=148, height=210, price=20.00, phone=+79994445566
+
+--- Содержимое контейнера ---
+PAPER: density=120, width=297, height=420, price=90.00, phone=+79996667788
+PAPER: density=80, width=148, height=210, price=20.00, phone=+79994445566
+PENCIL: leadDensity=2, color=ORANGE, price=33.30, phone=+79998889900
+PEN: type=BALL, diameter=0.70, price=70.00, phone=+79990001122
+PAPER: density=160, width=210, height=297, price=55.00, phone=+79991234567
+
+--- Содержимое контейнера ---
+PAPER: density=120, width=297, height=420, price=90.00, phone=+79996667788
+PAPER: density=80, width=148, height=210, price=20.00, phone=+79994445566
+PENCIL: leadDensity=2, color=ORANGE, price=33.30, phone=+79998889900
+PAPER: density=160, width=210, height=297, price=55.00, phone=+79991234567
+
+--- Содержимое контейнера ---
+Контейнер пуст.
+
+--- Содержимое контейнера ---
+Контейнер пуст.
