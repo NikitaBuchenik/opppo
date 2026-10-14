@@ -1,30 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <memory>
-#include <algorithm>
-#include <iomanip>
-#include <string>
-#include <unordered_map>
-#include <functional>
-
-using namespace std;
-
-// Вариант 3: Канцелярские принадлежности
-// Общие параметры: цена и номер телефона владельца.
-//
-// Формат входного файла:
-// ADD PENCIL <density> <color> <price> <phone>
-// ADD PEN <type> <diameter> <price> <phone>
-// ADD PAPER <density> <width> <height> <price> <phone>
-// REM PRICE <operator> <value>
-// REM TYPE <PENCIL|PEN|PAPER>
-// PRINT
-
-enum class Color {
-    RED, ORANGE, YELLOW, GREEN, BLUE, VIOLET, UNKNOWN
-};
+#include "variant3.h"
 
 string colorToString(Color color) {
     switch (color) {
@@ -48,106 +22,30 @@ Color stringToColor(const string& s) {
     return Color::UNKNOWN;
 }
 
-class Stationery {
-protected:
-    double price;
-    string phone;
+void Pencil::print(ostream& os) const {
+    os << "PENCIL: "
+       << "leadDensity=" << leadDensity
+       << ", color=" << colorToString(color)
+       << ", price=" << fixed << setprecision(2) << price
+       << ", phone=" << phone << '\n';
+}
 
-public:
-    Stationery(double price, const string& phone)
-        : price(price), phone(phone) {}
+void Pen::print(ostream& os) const {
+    os << "PEN: "
+       << "type=" << penType
+       << ", diameter=" << fixed << setprecision(2) << diameter
+       << ", price=" << fixed << setprecision(2) << price
+       << ", phone=" << phone << '\n';
+}
 
-    virtual ~Stationery() = default;
-
-    double getPrice() const {
-        return price;
-    }
-
-    string getPhone() const {
-        return phone;
-    }
-
-    virtual string getType() const = 0;
-    virtual void print(ostream& os) const = 0;
-};
-
-class Pencil : public Stationery {
-private:
-    int leadDensity;
-    Color color;
-
-public:
-    Pencil(int density, Color color, double price, const string& phone)
-        : Stationery(price, phone),
-          leadDensity(density),
-          color(color) {}
-
-    string getType() const override {
-        return "PENCIL";
-    }
-
-    void print(ostream& os) const override {
-        os << "PENCIL: "
-           << "leadDensity=" << leadDensity
-           << ", color=" << colorToString(color)
-           << ", price=" << fixed << setprecision(2) << price
-           << ", phone=" << phone << '\n';
-    }
-};
-
-class Pen : public Stationery {
-private:
-    string penType;
-    double diameter;
-
-public:
-    Pen(const string& type, double diameter, double price, const string& phone)
-        : Stationery(price, phone),
-          penType(type),
-          diameter(diameter) {}
-
-    string getType() const override {
-        return "PEN";
-    }
-
-    void print(ostream& os) const override {
-        os << "PEN: "
-           << "type=" << penType
-           << ", diameter=" << fixed << setprecision(2) << diameter
-           << ", price=" << fixed << setprecision(2) << price
-           << ", phone=" << phone << '\n';
-    }
-};
-
-class Paper : public Stationery {
-private:
-    int density;
-    int width;
-    int height;
-
-public:
-    Paper(int density, int width, int height,
-          double price, const string& phone)
-        : Stationery(price, phone),
-          density(density),
-          width(width),
-          height(height) {}
-
-    string getType() const override {
-        return "PAPER";
-    }
-
-    void print(ostream& os) const override {
-        os << "PAPER: "
-           << "density=" << density
-           << ", width=" << width
-           << ", height=" << height
-           << ", price=" << fixed << setprecision(2) << price
-           << ", phone=" << phone << '\n';
-    }
-};
-
-using Container = vector<unique_ptr<Stationery>>;
+void Paper::print(ostream& os) const {
+    os << "PAPER: "
+       << "density=" << density
+       << ", width=" << width
+       << ", height=" << height
+       << ", price=" << fixed << setprecision(2) << price
+       << ", phone=" << phone << '\n';
+}
 
 const unordered_map<string, function<bool(double, double)>> OPERATORS = {
     {">",  [](double a, double b) { return a > b;  }},
@@ -304,9 +202,40 @@ void processRemove(istringstream& iss, Container& items) {
     }
 }
 
+string formatItem(const Stationery& item) {
+    ostringstream oss;
+    item.print(oss);
+    string s = oss.str();
+    if (!s.empty() && s.back() == '\n') {
+        s.pop_back();
+    }
+    return s;
+}
+
+void applyCommand(const string& line, Container& items) {
+    istringstream iss(line);
+    string command;
+    iss >> command;
+
+    if (command == "ADD") {
+        processAdd(iss, items);
+    }
+    else if (command == "REM") {
+        processRemove(iss, items);
+    }
+    else if (command == "PRINT") {
+        // в тестах PRINT не проверяется через applyCommand
+    }
+    else if (command.empty()) {
+        // пустая строка
+    }
+    else {
+        cerr << "Неизвестная команда: " << command << '\n';
+    }
+}
+
 void processFile(const string& filename, Container& items) {
     ifstream file(filename);
-
     if (!file.is_open()) {
         cerr << "Не удалось открыть файл: " << filename << '\n';
         return;
@@ -319,11 +248,8 @@ void processFile(const string& filename, Container& items) {
     }
 
     string line;
-
     while (getline(file, line)) {
-        if (line.empty()) {
-            continue;
-        }
+        if (line.empty()) continue;
 
         istringstream iss(line);
         string command;
@@ -337,7 +263,6 @@ void processFile(const string& filename, Container& items) {
         }
         else if (command == "PRINT") {
             outFile << "\n--- Содержимое контейнера ---\n";
-
             if (items.empty()) {
                 outFile << "Контейнер пуст.\n";
             } else {
@@ -352,10 +277,10 @@ void processFile(const string& filename, Container& items) {
     }
 }
 
+#ifndef UNIT_TESTING
 int main() {
     Container items;
-
     processFile("input.txt", items);
-
     return 0;
 }
+#endif
