@@ -1,0 +1,312 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>variant3.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "variant3.h"
+
+<span style = "background-color:#dfd">string colorToString(Color color) {
+    switch (color) {</span>
+<span style = "background-color:#fdd">        case Color::RED: return "RED";
+        case Color::ORANGE: return "ORANGE";
+        case Color::YELLOW: return "YELLOW";
+        case Color::GREEN: return "GREEN";</span>
+<span style = "background-color:#dfd">        case Color::BLUE: return "BLUE";</span>
+<span style = "background-color:#fdd">        case Color::VIOLET: return "VIOLET";
+        default: return "UNKNOWN";</span>
+    }
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">Color stringToColor(const string&amp; s) {
+    if (s == "RED") return Color::RED;
+    if (s == "ORANGE") return Color::ORANGE;
+    if (s == "YELLOW") return Color::YELLOW;
+    if (s == "GREEN") return Color::GREEN;
+    if (s == "BLUE") return Color::BLUE;
+    if (s == "VIOLET") return Color::VIOLET;
+    return Color::UNKNOWN;
+}</span>
+
+<span style = "background-color:#dfd">void Pencil::print(ostream&amp; os) const {
+    os &lt;&lt; "PENCIL: "</span>
+       &lt;&lt; "leadDensity=" &lt;&lt; leadDensity
+       &lt;&lt; ", color=" &lt;&lt; colorToString(color)
+       &lt;&lt; ", price=" &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; price
+       &lt;&lt; ", phone=" &lt;&lt; phone &lt;&lt; '\n';
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">void Pen::print(ostream&amp; os) const {
+    os &lt;&lt; "PEN: "</span>
+       &lt;&lt; "type=" &lt;&lt; penType
+       &lt;&lt; ", diameter=" &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; diameter
+       &lt;&lt; ", price=" &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; price
+       &lt;&lt; ", phone=" &lt;&lt; phone &lt;&lt; '\n';
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">void Paper::print(ostream&amp; os) const {
+    os &lt;&lt; "PAPER: "</span>
+       &lt;&lt; "density=" &lt;&lt; density
+       &lt;&lt; ", width=" &lt;&lt; width
+       &lt;&lt; ", height=" &lt;&lt; height
+       &lt;&lt; ", price=" &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; price
+       &lt;&lt; ", phone=" &lt;&lt; phone &lt;&lt; '\n';
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">const unordered_map&lt;string, function&lt;bool(double, double)&gt;&gt; OPERATORS = {
+    {"&gt;",  [](double a, double b) { return a &gt; b;  }},
+    {"&lt;",  [](double a, double b) { return a &lt; b;  }},</span>
+<span style = "background-color:#fdd">    {"&gt;=", [](double a, double b) { return a &gt;= b; }},
+    {"&lt;=", [](double a, double b) { return a &lt;= b; }},
+    {"==", [](double a, double b) { return a == b; }},
+    {"!=", [](double a, double b) { return a != b; }},</span>
+<span style = "background-color:#dfd">};</span>
+
+<span style = "background-color:#dfd">bool compare(double left, const string&amp; op, double right) {
+    auto it = OPERATORS.find(op);
+    if (it == OPERATORS.end()) {</span>
+<span style = "background-color:#fdd">        return false;</span>
+    }
+<span style = "background-color:#dfd">    return it-&gt;second(left, right);
+}</span>
+
+<span style = "background-color:#dfd">unique_ptr&lt;Stationery&gt; parsePencil(istringstream&amp; iss) {</span>
+    int density;
+<span style = "background-color:#dfd">    string color;</span>
+    double price;
+<span style = "background-color:#dfd">    string phone;</span>
+
+<span style = "background-color:#dfd">    if (!(iss &gt;&gt; density &gt;&gt; color &gt;&gt; price &gt;&gt; phone)) {
+        cerr &lt;&lt; "ÐÑÐ¸Ð±ÐºÐ° ADD PENCIL\n";
+        return nullptr;</span>
+    }
+
+<span style = "background-color:#dfd">    Color c = stringToColor(color);
+    if (c == Color::UNKNOWN) {
+        cerr &lt;&lt; "ÐÐµÐ¸Ð·Ð²ÐµÑÑÐ½ÑÐ¹ ÑÐ²ÐµÑ ÐºÐ°ÑÐ°Ð½Ð´Ð°ÑÐ°: " &lt;&lt; color &lt;&lt; '\n';
+        return nullptr;</span>
+    }
+
+<span style = "background-color:#dfd">    return make_unique&lt;Pencil&gt;(density, c, price, phone);
+}</span>
+
+<span style = "background-color:#dfd">unique_ptr&lt;Stationery&gt; parsePen(istringstream&amp; iss) {
+    string penType;</span>
+    double diameter;
+    double price;
+<span style = "background-color:#dfd">    string phone;</span>
+
+<span style = "background-color:#dfd">    if (!(iss &gt;&gt; penType &gt;&gt; diameter &gt;&gt; price &gt;&gt; phone)) {
+        cerr &lt;&lt; "ÐÑÐ¸Ð±ÐºÐ° ADD PEN\n";
+        return nullptr;</span>
+    }
+
+<span style = "background-color:#dfd">    if (penType != "BALL" &amp;&amp; penType != "GEL") {
+        cerr &lt;&lt; "Ð¢Ð¸Ð¿ ÑÑÑÐºÐ¸ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±ÑÑÑ BALL Ð¸Ð»Ð¸ GEL\n";
+        return nullptr;</span>
+    }
+
+<span style = "background-color:#dfd">    return make_unique&lt;Pen&gt;(penType, diameter, price, phone);
+}</span>
+
+<span style = "background-color:#dfd">unique_ptr&lt;Stationery&gt; parsePaper(istringstream&amp; iss) {</span>
+    int density;
+    int width;
+    int height;
+    double price;
+<span style = "background-color:#dfd">    string phone;</span>
+
+<span style = "background-color:#dfd">    if (!(iss &gt;&gt; density &gt;&gt; width &gt;&gt; height &gt;&gt; price &gt;&gt; phone)) {
+        cerr &lt;&lt; "ÐÑÐ¸Ð±ÐºÐ° ADD PAPER\n";
+        return nullptr;</span>
+    }
+
+<span style = "background-color:#dfd">    return make_unique&lt;Paper&gt;(density, width, height, price, phone);
+}</span>
+
+<span style = "background-color:#dfd">void processAdd(istringstream&amp; iss, Container&amp; items) {
+    string type;
+    iss &gt;&gt; type;</span>
+
+<span style = "background-color:#dfd">    unique_ptr&lt;Stationery&gt; item;</span>
+
+<span style = "background-color:#dfd">    if (type == "PENCIL") {
+        item = parsePencil(iss);
+    }
+    else if (type == "PEN") {
+        item = parsePen(iss);
+    }
+    else if (type == "PAPER") {
+        item = parsePaper(iss);
+    }</span>
+    else {
+<span style = "background-color:#fdd">        cerr &lt;&lt; "ÐÐµÐ¸Ð·Ð²ÐµÑÑÐ½ÑÐ¹ ÑÐ¸Ð¿ Ð¾Ð±ÑÐµÐºÑÐ°: " &lt;&lt; type &lt;&lt; '\n';
+        return;</span>
+    }
+
+<span style = "background-color:#dfd">    if (item) {
+        items.push_back(move(item));</span>
+    }
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">void processRemove(istringstream&amp; iss, Container&amp; items) {
+    string field;
+    iss &gt;&gt; field;</span>
+
+<span style = "background-color:#dfd">    if (field == "TYPE") {
+        string type;
+        iss &gt;&gt; type;</span>
+
+<span style = "background-color:#dfd">        auto oldEnd = remove_if(</span>
+            items.begin(),
+            items.end(),
+            [&amp;](const unique_ptr&lt;Stationery&gt;&amp; item) {
+<span style = "background-color:#dfd">                return item-&gt;getType() == type;
+            }</span>
+        );
+
+<span style = "background-color:#dfd">        items.erase(oldEnd, items.end());
+    }
+    else if (field == "PRICE") {
+        string op;</span>
+        double value;
+
+<span style = "background-color:#dfd">        if (!(iss &gt;&gt; op &gt;&gt; value)) {</span>
+<span style = "background-color:#fdd">            cerr &lt;&lt; "ÐÑÐ¸Ð±ÐºÐ° ÑÑÐ»Ð¾Ð²Ð¸Ñ REM PRICE\n";
+            return;</span>
+        }
+
+<span style = "background-color:#dfd">        auto oldEnd = remove_if(</span>
+            items.begin(),
+            items.end(),
+            [&amp;](const unique_ptr&lt;Stationery&gt;&amp; item) {
+<span style = "background-color:#dfd">                return compare(item-&gt;getPrice(), op, value);
+            }</span>
+        );
+
+<span style = "background-color:#dfd">        items.erase(oldEnd, items.end());
+    }
+    else if (field == "PHONE") {
+        string phoneValue;
+        if (!(iss &gt;&gt; phoneValue)) {</span>
+<span style = "background-color:#fdd">            cerr &lt;&lt; "ÐÑÐ¸Ð±ÐºÐ° ÑÑÐ»Ð¾Ð²Ð¸Ñ REM PHONE\n";
+            return;</span>
+        }
+
+<span style = "background-color:#dfd">        auto oldEnd = remove_if(</span>
+            items.begin(),
+            items.end(),
+            [&amp;](const unique_ptr&lt;Stationery&gt;&amp; item) {
+<span style = "background-color:#dfd">                return item-&gt;getPhone() == phoneValue;
+            }</span>
+        );
+
+<span style = "background-color:#dfd">        items.erase(oldEnd, items.end());
+    }</span>
+    else {
+<span style = "background-color:#dfd">        cerr &lt;&lt; "ÐÐµÐ¸Ð·Ð²ÐµÑÑÐ½Ð¾Ðµ Ð¿Ð¾Ð»Ðµ ÑÑÐ»Ð¾Ð²Ð¸Ñ REM: " &lt;&lt; field &lt;&lt; '\n';</span>
+    }
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">string formatItem(const Stationery&amp; item) {
+    ostringstream oss;
+    item.print(oss);
+    string s = oss.str();
+    if (!s.empty() &amp;&amp; s.back() == '\n') {
+        s.pop_back();</span>
+    }
+<span style = "background-color:#dfd">    return s;
+}</span>
+
+<span style = "background-color:#dfd">void applyCommand(const string&amp; line, Container&amp; items) {
+    istringstream iss(line);
+    string command;
+    iss &gt;&gt; command;</span>
+
+<span style = "background-color:#dfd">    if (command == "ADD") {
+        processAdd(iss, items);
+    }
+    else if (command == "REM") {
+        processRemove(iss, items);
+    }
+    else if (command == "PRINT") {</span>
+        // Ð² ÑÐµÑÑÐ°Ñ PRINT Ð½Ðµ Ð¿ÑÐ¾Ð²ÐµÑÑÐµÑÑÑ ÑÐµÑÐµÐ· applyCommand
+<span style = "background-color:#fdd">    }</span>
+<span style = "background-color:#dfd">    else if (command.empty()) {</span>
+        // Ð¿ÑÑÑÐ°Ñ ÑÑÑÐ¾ÐºÐ°
+<span style = "background-color:#fdd">    }</span>
+    else {
+<span style = "background-color:#dfd">        cerr &lt;&lt; "ÐÐµÐ¸Ð·Ð²ÐµÑÑÐ½Ð°Ñ ÐºÐ¾Ð¼Ð°Ð½Ð´Ð°: " &lt;&lt; command &lt;&lt; '\n';</span>
+    }
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#fdd">void processFile(const string&amp; filename, Container&amp; items) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr &lt;&lt; "ÐÐµ ÑÐ´Ð°Ð»Ð¾ÑÑ Ð¾ÑÐºÑÑÑÑ ÑÐ°Ð¹Ð»: " &lt;&lt; filename &lt;&lt; '\n';
+        return;</span>
+    }
+
+<span style = "background-color:#fdd">    ofstream outFile("output.txt");
+    if (!outFile.is_open()) {
+        cerr &lt;&lt; "ÐÐµ ÑÐ´Ð°Ð»Ð¾ÑÑ Ð¾ÑÐºÑÑÑÑ ÑÐ°Ð¹Ð» Ð´Ð»Ñ Ð·Ð°Ð¿Ð¸ÑÐ¸: output.txt\n";
+        return;</span>
+    }
+
+<span style = "background-color:#fdd">    string line;
+    while (getline(file, line)) {
+        if (line.empty()) continue;</span>
+
+<span style = "background-color:#fdd">        istringstream iss(line);
+        string command;
+        iss &gt;&gt; command;</span>
+
+<span style = "background-color:#fdd">        if (command == "ADD") {
+            processAdd(iss, items);
+        }
+        else if (command == "REM") {
+            processRemove(iss, items);
+        }
+        else if (command == "PRINT") {
+            outFile &lt;&lt; "\n--- Ð¡Ð¾Ð´ÐµÑÐ¶Ð¸Ð¼Ð¾Ðµ ÐºÐ¾Ð½ÑÐµÐ¹Ð½ÐµÑÐ° ---\n";
+            if (items.empty()) {
+                outFile &lt;&lt; "ÐÐ¾Ð½ÑÐµÐ¹Ð½ÐµÑ Ð¿ÑÑÑ.\n";
+            } else {
+                for (const auto&amp; item : items) {
+                    item-&gt;print(outFile);
+                }</span>
+            }
+<span style = "background-color:#fdd">        }</span>
+        else {
+<span style = "background-color:#fdd">            cerr &lt;&lt; "ÐÐµÐ¸Ð·Ð²ÐµÑÑÐ½Ð°Ñ ÐºÐ¾Ð¼Ð°Ð½Ð´Ð°: " &lt;&lt; command &lt;&lt; '\n';</span>
+        }
+<span style = "background-color:#fdd">    }
+}</span>
+
+#ifndef UNIT_TESTING
+int main() {
+    Container items;
+    processFile("input.txt", items);
+    return 0;
+}
+#endif</pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>

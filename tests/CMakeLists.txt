@@ -15,6 +15,6 @@ add_executable(test_variant3
 target_include_directories(test_variant3 PRIVATE ${CMAKE_SOURCE_DIR})
 target_compile_definitions(test_variant3 PRIVATE UNIT_TESTING)
 target_link_libraries(test_variant3 gtest gtest_main)
+set_target_properties(test_variant3 PROPERTIES LINK_FLAGS "/PROFILE")
 
-include(GoogleTest)
-gtest_discover_tests(test_variant3)
+add_test(NAME test_variant3 COMMAND test_variant3)

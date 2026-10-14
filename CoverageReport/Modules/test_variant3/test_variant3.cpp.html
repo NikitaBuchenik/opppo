@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>test_variant3.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include &lt;gtest/gtest.h&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+#include "variant3.h"
+
+// ---------- Ð£ÑÐ¿ÐµÑÐ½ÑÐµ ÑÑÐµÐ½Ð°ÑÐ¸Ð¸: Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ ----------
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPencilSuccess) {
+    Container items;
+    std::string line = "ADD PENCIL 2 BLUE 50.5 +79991234567";
+    applyCommand(line, items);</span>
+
+<span style = "background-color:#dfd">    ASSERT_EQ(items.size(), 1u);
+    EXPECT_EQ(items[0]-&gt;getType(), "PENCIL");
+    EXPECT_DOUBLE_EQ(items[0]-&gt;getPrice(), 50.5);
+    EXPECT_EQ(items[0]-&gt;getPhone(), "+79991234567");
+}</span>
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPenSuccess) {
+    Container items;
+    applyCommand("ADD PEN BALL 0.7 80 +79991112233", items);</span>
+
+<span style = "background-color:#dfd">    ASSERT_EQ(items.size(), 1u);
+    EXPECT_EQ(items[0]-&gt;getType(), "PEN");
+    EXPECT_DOUBLE_EQ(items[0]-&gt;getPrice(), 80.0);
+    EXPECT_EQ(items[0]-&gt;getPhone(), "+79991112233");
+}</span>
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPaperSuccess) {
+    Container items;
+    applyCommand("ADD PAPER 80 210 297 35 +79990001122", items);</span>
+
+<span style = "background-color:#dfd">    ASSERT_EQ(items.size(), 1u);
+    EXPECT_EQ(items[0]-&gt;getType(), "PAPER");
+    EXPECT_DOUBLE_EQ(items[0]-&gt;getPrice(), 35.0);
+    EXPECT_EQ(items[0]-&gt;getPhone(), "+79990001122");
+}</span>
+
+// ---------- Ð£ÑÐ¿ÐµÑÐ½ÑÐµ ÑÑÐµÐ½Ð°ÑÐ¸Ð¸: ÑÐ´Ð°Ð»ÐµÐ½Ð¸Ðµ ----------
+
+<span style = "background-color:#dfd">TEST(RemoveCommandTest, RemoveByType) {
+    Container items;
+    applyCommand("ADD PENCIL 2 BLUE 50.5 +79991234567", items);
+    applyCommand("ADD PEN BALL 0.7 80 +79991112233", items);
+    applyCommand("ADD PAPER 80 210 297 35 +79990001122", items);</span>
+
+<span style = "background-color:#dfd">    applyCommand("REM TYPE PENCIL", items);</span>
+
+<span style = "background-color:#dfd">    ASSERT_EQ(items.size(), 2u);
+    EXPECT_EQ(items[0]-&gt;getType(), "PEN");
+    EXPECT_EQ(items[1]-&gt;getType(), "PAPER");
+}</span>
+
+<span style = "background-color:#dfd">TEST(RemoveCommandTest, RemoveByPriceGreater) {
+    Container items;
+    applyCommand("ADD PENCIL 2 BLUE 50.5 +79991234567", items);
+    applyCommand("ADD PEN BALL 0.7 80 +79991112233", items);
+    applyCommand("ADD PAPER 80 210 297 35 +79990001122", items);</span>
+
+<span style = "background-color:#dfd">    applyCommand("REM PRICE &gt; 60", items);</span>
+
+<span style = "background-color:#dfd">    ASSERT_EQ(items.size(), 2u);
+    EXPECT_DOUBLE_EQ(items[0]-&gt;getPrice(), 50.5);
+    EXPECT_DOUBLE_EQ(items[1]-&gt;getPrice(), 35.0);
+}</span>
+
+<span style = "background-color:#dfd">TEST(RemoveCommandTest, RemoveByPriceLess) {
+    Container items;
+    applyCommand("ADD PENCIL 2 BLUE 50.5 +79991234567", items);
+    applyCommand("ADD PAPER 80 210 297 35 +79990001122", items);</span>
+
+<span style = "background-color:#dfd">    applyCommand("REM PRICE &lt; 40", items);</span>
+
+<span style = "background-color:#dfd">    ASSERT_EQ(items.size(), 1u);
+    EXPECT_DOUBLE_EQ(items[0]-&gt;getPrice(), 50.5);
+}</span>
+
+<span style = "background-color:#dfd">TEST(RemoveCommandTest, RemoveByPhone) {
+    Container items;
+    applyCommand("ADD PENCIL 2 BLUE 50.5 +79991234567", items);
+    applyCommand("ADD PEN BALL 0.7 80 +79991112233", items);</span>
+
+<span style = "background-color:#dfd">    applyCommand("REM PHONE +79991234567", items);</span>
+
+<span style = "background-color:#dfd">    ASSERT_EQ(items.size(), 1u);
+    EXPECT_EQ(items[0]-&gt;getPhone(), "+79991112233");
+}</span>
+
+// ---------- Ð¤Ð¾ÑÐ¼Ð°ÑÐ¸ÑÐ¾Ð²Ð°Ð½Ð¸Ðµ ----------
+
+<span style = "background-color:#dfd">TEST(PrintTest, FormatPencil) {
+    Pencil pencil(2, Color::BLUE, 50.5, "+79991234567");
+    std::string output = formatItem(pencil);</span>
+
+<span style = "background-color:#dfd">    EXPECT_NE(output.find("PENCIL"), std::string::npos);
+    EXPECT_NE(output.find("leadDensity=2"), std::string::npos);
+    EXPECT_NE(output.find("color=BLUE"), std::string::npos);
+    EXPECT_NE(output.find("price=50.50"), std::string::npos);
+}</span>
+
+<span style = "background-color:#dfd">TEST(PrintTest, FormatPen) {
+    Pen pen("BALL", 0.7, 80.0, "+79991112233");
+    std::string output = formatItem(pen);</span>
+
+<span style = "background-color:#dfd">    EXPECT_NE(output.find("PEN"), std::string::npos);
+    EXPECT_NE(output.find("type=BALL"), std::string::npos);
+    EXPECT_NE(output.find("diameter=0.70"), std::string::npos);
+}</span>
+
+<span style = "background-color:#dfd">TEST(PrintTest, FormatPaper) {
+    Paper paper(80, 210, 297, 35.0, "+79990001122");
+    std::string output = formatItem(paper);</span>
+
+<span style = "background-color:#dfd">    EXPECT_NE(output.find("PAPER"), std::string::npos);
+    EXPECT_NE(output.find("density=80"), std::string::npos);
+    EXPECT_NE(output.find("width=210"), std::string::npos);
+    EXPECT_NE(output.find("height=297"), std::string::npos);
+}</span>
+
+// ---------- ÐÑÐºÐ»ÑÑÐ¸ÑÐµÐ»ÑÐ½ÑÐµ ÑÐ¸ÑÑÐ°ÑÐ¸Ð¸: Ð½ÐµÐ´Ð¾ÑÑÐ°ÑÐ¾Ðº Ð¿Ð°ÑÐ°Ð¼ÐµÑÑÐ¾Ð² ----------
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPencilMissingParameters) {
+    Container items;
+    applyCommand("ADD PENCIL 2 BLUE 50.5", items);
+    EXPECT_TRUE(items.empty());
+}</span>
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPenMissingParameters) {
+    Container items;
+    applyCommand("ADD PEN BALL 0.7", items);
+    EXPECT_TRUE(items.empty());
+}</span>
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPaperMissingParameters) {
+    Container items;
+    applyCommand("ADD PAPER 80 210 297 35", items);
+    EXPECT_TRUE(items.empty());
+}</span>
+
+// ---------- ÐÑÐºÐ»ÑÑÐ¸ÑÐµÐ»ÑÐ½ÑÐµ ÑÐ¸ÑÑÐ°ÑÐ¸Ð¸: Ð½ÐµÐ²ÐµÑÐ½ÑÐµ Ð·Ð½Ð°ÑÐµÐ½Ð¸Ñ Ð¿ÐµÑÐµÑÐ¸ÑÐ»Ð¸Ð¼ÑÑ ÑÐ¸Ð¿Ð¾Ð² ----------
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPencilInvalidColor) {
+    Container items;
+    applyCommand("ADD PENCIL 2 PURPLE 50.5 +79991234567", items);
+    EXPECT_TRUE(items.empty());
+}</span>
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPenInvalidType) {
+    Container items;
+    applyCommand("ADD PEN FOUNTAIN 0.7 80 +79991112233", items);
+    EXPECT_TRUE(items.empty());
+}</span>
+
+// ---------- ÐÑÐºÐ»ÑÑÐ¸ÑÐµÐ»ÑÐ½ÑÐµ ÑÐ¸ÑÑÐ°ÑÐ¸Ð¸: Ð½ÐµÐ²ÐµÑÐ½ÑÐ¹ ÑÐ¸ÑÐ»Ð¾Ð²Ð¾Ð¹ ÑÐ¾ÑÐ¼Ð°Ñ ----------
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPencilInvalidPrice) {
+    Container items;
+    applyCommand("ADD PENCIL 2 BLUE abc +79991234567", items);
+    EXPECT_TRUE(items.empty());
+}</span>
+
+<span style = "background-color:#dfd">TEST(AddCommandTest, AddPaperInvalidDimensions) {
+    Container items;
+    applyCommand("ADD PAPER abc 210 297 35 +79990001122", items);
+    EXPECT_TRUE(items.empty());
+}</span>
+
+// ---------- ÐÑÐºÐ»ÑÑÐ¸ÑÐµÐ»ÑÐ½ÑÐµ ÑÐ¸ÑÑÐ°ÑÐ¸Ð¸: Ð½ÐµÐ¸Ð·Ð²ÐµÑÑÐ½ÑÐµ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ Ð¸ Ð¿Ð¾Ð»Ñ ----------
+
+<span style = "background-color:#dfd">TEST(CommandTest, UnknownCommand) {
+    Container items;
+    applyCommand("DELETE ALL", items);
+    EXPECT_TRUE(items.empty());
+}</span>
+
+<span style = "background-color:#dfd">TEST(RemoveCommandTest, UnknownRemoveField) {
+    Container items;
+    applyCommand("ADD PENCIL 2 BLUE 50.5 +79991234567", items);</span>
+
+<span style = "background-color:#dfd">    applyCommand("REM COLOR RED", items);</span>
+
+<span style = "background-color:#dfd">    EXPECT_EQ(items.size(), 1u);
+}</span>
+
+// ---------- ÐÑÐ°Ð½Ð¸ÑÐ½ÑÐµ ÑÐ»ÑÑÐ°Ð¸ ----------
+
+<span style = "background-color:#dfd">TEST(RemoveCommandTest, RemoveFromEmptyContainer) {
+    Container items;
+    applyCommand("REM TYPE PENCIL", items);
+    EXPECT_TRUE(items.empty());
+}</span>
+
+<span style = "background-color:#dfd">TEST(RemoveCommandTest, RemoveNonexistentType) {
+    Container items;
+    applyCommand("ADD PENCIL 2 BLUE 50.5 +79991234567", items);</span>
+
+<span style = "background-color:#dfd">    applyCommand("REM TYPE PEN", items);</span>
+
+<span style = "background-color:#dfd">    EXPECT_EQ(items.size(), 1u);
+}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>
